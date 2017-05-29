@@ -1,15 +1,11 @@
 ---
-title: API Reference
+title: Hako API Reference
 
 language_tabs:
-  - shell
-  - ruby
-  - python
-  - javascript
+  - shell: cURL
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
+  - <a href='https://dashboard.withhako.com'>Sign Up for a Developer Key</a>
 
 includes:
   - errors
@@ -19,7 +15,7 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the Hako API! You can use our API to access Hako API endpoints, which can get information on various cats, kittens, and breeds in our database.
 
 We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
@@ -27,42 +23,23 @@ This example API documentation page was created with [Slate](https://github.com/
 
 # Authentication
 
+Hako uses API keys to allow access to the API.
 > To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
 
 ```shell
 # With shell, you can just pass the correct header with each request
 curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+  -H "Authorization: your_API_key"
 ```
 
-```javascript
-const kittn = require('kittn');
+> Make sure to replace `your_API_key` with your API key. You can find this in your [dashboard](https://dashboard.withhako.com).
 
-let api = kittn.authorize('meowmeowmeow');
-```
+Hako expects for the API key to be included in all API requests to the server in a header that looks like the following:
 
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
+`Authorization: your_API_key`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+You must replace <code>your_API_key</code> with your personal API key.
 </aside>
 
 # Kittens
@@ -72,26 +49,26 @@ You must replace <code>meowmeowmeow</code> with your personal API key.
 ```ruby
 require 'kittn'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+api = Hako::APIClient.authorize!('your_API_key')
 api.kittens.get
 ```
 
 ```python
 import kittn
 
-api = kittn.authorize('meowmeowmeow')
+api = kittn.authorize('your_API_key')
 api.kittens.get()
 ```
 
 ```shell
 curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
+  -H "Authorization: your_API_key"
 ```
 
 ```javascript
 const kittn = require('kittn');
 
-let api = kittn.authorize('meowmeowmeow');
+let api = kittn.authorize('your_API_key');
 let kittens = api.kittens.get();
 ```
 
@@ -138,26 +115,26 @@ Remember — a happy kitten is an authenticated kitten!
 ```ruby
 require 'kittn'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+api = Hako::APIClient.authorize!('your_API_key')
 api.kittens.get(2)
 ```
 
 ```python
 import kittn
 
-api = kittn.authorize('meowmeowmeow')
+api = kittn.authorize('your_API_key')
 api.kittens.get(2)
 ```
 
 ```shell
 curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
+  -H "Authorization: your_API_key"
 ```
 
 ```javascript
 const kittn = require('kittn');
 
-let api = kittn.authorize('meowmeowmeow');
+let api = kittn.authorize('your_API_key');
 let max = api.kittens.get(2);
 ```
 
