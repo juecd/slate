@@ -5,7 +5,7 @@ language_tabs:
   - shell: cURL
 
 toc_footers:
-  - <a href='https://dashboard.withhako.com'>Sign Up for a Developer Key</a>
+  - <a href='https://dashboard.withhako.com'>Sign Up for a Developer Key!</a>
 
 includes:
   - errors
@@ -15,64 +15,58 @@ search: true
 
 # Introduction
 
-Welcome to the Hako API! You can use our API to access Hako API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to **Hako**! Here you'll find comprehensive information for integrating with our API endpoints. If you have any questions, you can find help in our [Slack community](https://hakosupport.slack.com/) or you may email support@withhako.com.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+The Hako API is organized around REST. All requests must include a content-type of application/json and the body must be a valid JSON.
 
-This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
+JSON is returned by all API responses, including errors.
 
-# Authentication
+All **POST**, **PUT**, and **DELETE** requests require an array of one or more objects to create/update/delete as input. Similarly, these calls output an array upon successul. This allows fewer calls to the Hako API when mass-updating inventory. In the future, the Hako API will allow individual object calls.
 
-Hako uses API keys to allow access to the API.
+##Hosts Available
+`https://api.withhako.com/v0/ (Production)`
+
+# API Keys and Access
+
 > To authorize, use this code:
 
 ```shell
-# With shell, you can just pass the correct header with each request
 curl "api_endpoint_here"
-  -H "Authorization: your_API_key"
+  -u "your_API_key"
 ```
 
-> Make sure to replace `your_API_key` with your API key. You can find this in your [dashboard](https://dashboard.withhako.com).
+To gain access to the Hako API, please create an account on our [Dashboard](https://dashboard.withhako.com) or log into your existing account. There you will find a Live API Key with which you can make requests. 
 
-Hako expects for the API key to be included in all API requests to the server in a header that looks like the following:
+Hako expects your API key to be included in all API requests. Simply provide your API key as the basic auth username value using the `-u` flag:
 
-`Authorization: your_API_key`
+`-u "your_API_key"`
 
 <aside class="notice">
 You must replace <code>your_API_key</code> with your personal API key.
 </aside>
 
-# Kittens
+## Rate Limiting
+The Hako API allows up to **1000** requests per minute. If the max limit is reached, you will receive a `429` error and a message telling you to try again later.
 
-## Get All Kittens
+# Items
+## The Item Object
+The Item object represents the smallest unit of a product identified by a  SKU (stock keeping unit). For example, a customer's store may sell t-shirts, in which each type of t-shirt is a unique Item.
 
-```ruby
-require 'kittn'
+###Attributes
+Attribute | Type | Description
+---------- | ------- | -------
+name | String | The name of the Item
+sku | String | The unique SKU for the Item
+expires | Number (unix timestamp) | The unix date in which the product expires, such e.g. perishable products
+price | Number | The price of the product
 
-api = Hako::APIClient.authorize!('your_API_key')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('your_API_key')
-api.kittens.get()
-```
-
+##Create Items
 ```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: your_API_key"
+curl -X POST --data "[{sku: 'sku-123'}]" "http://api.withhako.com/v0/items"
+  -u "your_API_key"
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('your_API_key');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
+> Example Response:
 
 ```json
 [
@@ -93,74 +87,637 @@ let kittens = api.kittens.get();
 ]
 ```
 
-This endpoint retrieves all kittens.
+Creates Item objects with the specified SKUs and any other optional parameters provided. SKUs must be unique to all other existing Items.
+
+Returns an **array** of created Item objects if successful.
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`POST https://api.withhako.com/v0/items`
 
 ### Query Parameters
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+Parameter | Required
+--------- | -------
+sku | String | true 
+name | String | false
+expires | Number (unix timestamp) | false
+price | Number | false
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+### Response Parameters
 
-## Get a Specific Kitten
+Parameter | Type
+--------- | -------
+sku | The SKU of the created Item
+name | The name of the created Item
+expires | The expiration date of the created Item if specified on input
+price | The price of the created Item if specified on input
 
-```ruby
-require 'kittn'
-
-api = Hako::APIClient.authorize!('your_API_key')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('your_API_key')
-api.kittens.get(2)
-```
-
+##Retrieve Items
 ```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: your_API_key"
+curl "http://api.withhako.com/v0/items"
+  -u "your_API_key"
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('your_API_key');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+> Example Response:
 
 ```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
 ```
 
-This endpoint retrieves a specific kitten.
+Retrieves the details of existing Items based on the search parameters given in the request.
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+Returns an **array** of retrieved Item objects if successful.
 
 ### HTTP Request
 
-`GET http://example.com/kittens/<ID>`
+`GET https://api.withhako.com/v0/items`
 
-### URL Parameters
+### Query Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | false 
+name | String | false
+expires | Number (unix timestamp) | false
+createdAt | Number (unix timestamp) | false
+updatedAt | Number (unix timestamp) | false
+price | Number | false
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+sku | The SKU of the retrieved Item
+name | The name of the retrieved Item
+createdAt | The creation date of the retrieved Item
+updatedAt | The most recent updated date of the retrieved Item
+expires | The expiration date of the retrieved Item if exists
+price | The price of the retrieved Item if exists
+
+##Update Items
+```shell
+curl -X PUT --data "[{sku: 'sku-123', updates: {name: 't-shirt'}}]" "http://api.withhako.com/v0/items"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Updates Item objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
+
+Returns an **array** of updated Item objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/items`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+updates | JSON dictionary |  true
+
+### Update Parameter Options
+Parameter | Type
+--------- | ------- | -------
+sku | String
+name | String
+expires | Number (unix timestamp)
+price | Number
+
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+sku | The SKU of the updated Item
+name | The name of the updated Item
+createdAt | The creation date of the updated Item
+updatedAt | The most recent updated date of the updated Item
+expires | The expiration date of the updated Item if exists
+price | The price of the updated Item if exists
+
+##Delete Items
+```shell
+curl -X DELETE "http://api.withhako.com/v0/items"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Permanently deletes Item objects. This cannot be undone.
+
+Returns an **array** of deleted Item SKUs if successful.
+
+### HTTP Request
+
+`DELETE https://api.withhako.com/v0/items`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+sku | The SKU of the deleted Item
+
+# Warehouses
+## The Warehouse Object
+The Warehouses object represents locations where Items reside. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept.
+
+###Attributes
+Attribute | Type | Description
+---------- | ------- | -------
+name | String | The name of the Warehouse
+warehouseID | String | A unique string identifying the Warehouse
+
+##Create Warehouses
+```shell
+curl -X POST --data "[{warehouseID: 'warehouse-123'}]" "http://api.withhako.com/v0/warehouses"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Creates Warehouse objects with the specified warehouseID and any other optional parameters provided. warehouseID must be unique to all other existing Warehouses.
+
+Returns an **array** of created Warehouse objects if successful.
+
+### HTTP Request
+
+`POST https://api.withhako.com/v0/warehouses`
+
+### Query Parameters
+
+Parameter | Required
+--------- | -------
+warehouseID | String | true 
+name | String | false
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the created Warehouse
+name | The name of the created Warehouse
+
+##Retrieve Warehouses
+```shell
+curl "http://api.withhako.com/v0/warehouses"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Retrieves the details of existing Warehouses based on the search parameters given in the request.
+
+Returns an **array** of retrieved Warehouses objects if successful.
+
+### HTTP Request
+
+`GET https://api.withhako.com/v0/warehouses`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+warehouseID | String | false 
+name | String | false
+createdAt | Number (unix timestamp) | false
+updatedAt | Number (unix timestamp) | false
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the retrieved Warehouse
+name | The name of the retrieved Warehouse
+createdAt | The creation date of the retrieved Warehouse
+updatedAt | The most recent updated date of the retrieved Warehouse
+
+##Update Warehouses
+```shell
+curl -X PUT --data "[{warehouseID: 'warehouse-123', updates: {name: 'Bayview Warehouse'}}]" "http://api.withhako.com/v0/warehouses"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Updates Warehouse objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
+
+Returns an **array** of updated Warehouse objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/warehouses`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+warehouseID | String | true
+updates | JSON dictionary |  true
+
+### Update Parameter Options
+Parameter | Type
+--------- | ------- | -------
+warehouseID | String
+name | String
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the updated Warehouse
+name | The name of the updated Warehouse
+createdAt | The creation date of the updated Warehouse
+updatedAt | The most recent updated date of the updated Warehouse
+
+##Delete Warehouses
+```shell
+curl -X DELETE "http://api.withhako.com/v0/warehouses"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Permanently deletes Warehouse objects. This cannot be undone.
+
+Returns an **array** of deleted Warehouse warehouseIDs if successful.
+
+### HTTP Request
+
+`DELETE https://api.withhako.com/v0/warehouses`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+warehouseID | String | true
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the deleted Warehouse
+
+# Inventory
+## The Inventory Object
+The Inventory object represents the count of an Item that exists at a Warehouse. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept. One Warehouse has a quantity of 10 t-shirt Items and the other has 20.
+
+###Attributes
+Attribute | Type | Description
+---------- | ------- | -------
+sku | String | The SKU of the Item
+warehouseID | String | The warehouseID location of the Item
+quantity | Number | The quantity of Items at specified Warehouse
+
+##Create Inventory
+```shell
+curl -X POST --data "[{sku: 'sku-000', warehouseID: 'warehouse-123', quantity: 15}]" "http://api.withhako.com/v0/inventory"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Creates Inventory objects with the specified sku, warehouseID, and quantity at the specified Warehouse. If the specified sku and warehouseID already has inventory saved in Hako, this endpoint will return an error and suggest you update the inventory count for the specified sku and warehouseID instead.
+
+Returns an **array** of created Inventory objects if successful.
+
+### HTTP Request
+
+`POST https://api.withhako.com/v0/inventory`
+
+### Query Parameters
+
+Parameter | Required
+--------- | -------
+warehouseID | String | true 
+sku | String | true
+quantity | Number | true
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the Warehouse that has Inventory
+sku | The SKU of the Item that has Inventory
+quantity | The quantity of Item in the Warehouse
+
+##Retrieve Inventory
+```shell
+curl "http://api.withhako.com/v0/inventory"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Retrieves the inventory count of the requested sku and warehouseID. In the future, this endpoint will allow retrieval of inventory counts across all warehouses based on sku or warehouseID.
+
+Returns an **array** of retrieved Inventory objects if successful.
+
+### HTTP Request
+
+`GET https://api.withhako.com/v0/inventory`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+warehouseID | String | false 
+sku | String | false
+quantity | Number | false
+createdAt | Number (unix timestamp) | false
+updatedAt | Number (unix timestamp) | false
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the retrieved Inventory object
+sku | The SKU of the retrieved Inventory object
+quantity | The quantity of Items in the Warehouse
+createdAt | The creation date of the retrieved Inventory object
+updatedAt | The most recent updated date of the retrieved Inventory object
+
+##Update Inventory
+```shell
+curl -X PUT --data "[{sku: 'sku-123', warehouseID: 'warehouse-192', updates: {quantity: 100}}]" "http://api.withhako.com/v0/inventory"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Updates Inventory objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
+
+Returns an **array** of updated Inventory objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/inventory`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+warehouseID | String | true
+updates | JSON dictionary |  true
+
+### Update Parameter Options
+Parameter | Type
+--------- | -------
+warehouseID | String
+sku | String
+quantity | Number
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the updated Inventory Object
+sku | The SKU of the updated Inventory object
+quantity | The quantity of Items in Warehouse
+createdAt | The creation date of the updated Warehouse
+updatedAt | The most recent updated date of the updated Warehouse
+
+##Delete Inventory
+```shell
+curl -X DELETE "http://api.withhako.com/v0/inventory"
+  -u "your_API_key"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+Permanently deletes Inventory objects. This is the same as assigning a quantity of 0 Items to a Warehouse. This cannot be undone.
+
+Returns an **array** of deleted Inventory dictionaries containing SKUs and warehouseIDs if successful.
+
+### HTTP Request
+
+`DELETE https://api.withhako.com/v0/warehouses`
+
+### Query Parameters
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+warehouseID | String | true
+
+### Response Parameters
+
+Parameter | Type
+--------- | -------
+sku | The SKU of the deleted Inventory object
+warehouseID | The warehouseID of the deleted Inventory object
 
