@@ -80,7 +80,7 @@ curl -X POST --data "[{sku: 'hk-001', name: 'Long Sleeve Tshirt', expires: 14962
 ]
 ```
 
-Creates Item objects with the specified SKUs and any other optional parameters provided. SKUs must be unique to all other existing Items.
+Creates **Item** objects with the specified SKUs and any other optional parameters provided. SKUs must be unique to all other existing Items.
 
 Returns an **array** of created Item objects if successful.
 
@@ -91,8 +91,8 @@ Returns an **array** of created Item objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Required
---------- | -------
+Parameter | Type | Required
+--------- | ------- | -------
 sku | String | true 
 name | String | false
 expires | Number (unix timestamp) | false
@@ -255,7 +255,7 @@ sku | The SKU of the deleted Item
 
 # Warehouses
 ## The Warehouse Object
-The Warehouses object represents locations where Items reside. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept.
+The **Warehouse** object represents locations where **Items** reside. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept.
 
 ###Attributes
 Attribute | Type | Description
@@ -265,7 +265,7 @@ warehouseID | String | A unique string identifying the Warehouse
 
 ##Create Warehouses
 ```shell
-curl -X POST --data "[{warehouseID: 'warehouse-123'}]" "https://api.withhako.com/v0/warehouses"
+curl -X POST --data "[{warehouseID: 'warehouse-010', name: 'San Francisco Warehouse'}]" "https://api.withhako.com/v0/warehouses"
   -u "your_API_key"
 ```
 
@@ -275,22 +275,13 @@ curl -X POST --data "[{warehouseID: 'warehouse-123'}]" "https://api.withhako.com
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "warehouseID": "warehouse-010",
+    "name": "San Francisco Warehouse"
   }
 ]
 ```
 
-Creates Warehouse objects with the specified warehouseID and any other optional parameters provided. warehouseID must be unique to all other existing Warehouses.
+Creates **Warehouse** objects with the specified warehouseID and any other optional parameters provided. warehouseID must be unique to all other existing Warehouses.
 
 Returns an **array** of created Warehouse objects if successful.
 
@@ -301,8 +292,8 @@ Returns an **array** of created Warehouse objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Required
---------- | -------
+Parameter | Type | Required
+--------- | ------- | -------
 warehouseID | String | true 
 name | String | false
 
@@ -313,10 +304,12 @@ Parameter | Type
 --------- | -------
 warehouseID | The warehouseID of the created Warehouse
 name | The name of the created Warehouse
+createdAt | The creation date of the created Warehouse
+updatedAt | The most recent updated date of the created Warehouse
 
 ##Retrieve Warehouses
 ```shell
-curl "https://api.withhako.com/v0/warehouses"
+curl -X GET "https://api.withhako.com/v0/warehouses"
   -u "your_API_key"
 ```
 
@@ -326,17 +319,8 @@ curl "https://api.withhako.com/v0/warehouses"
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "warehouseID": "warehouse-010",
+    "name": "San Francisco Warehouse"
   }
 ]
 ```
@@ -350,7 +334,7 @@ Returns an **array** of retrieved Warehouses objects if successful.
 `GET https://api.withhako.com/v0/warehouses`
 
 ### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+_This endpoint requires a JSON object as input. The parameters for the object are as follows:_
 
 Parameter | Type | Required
 --------- | ------- | -------
@@ -371,7 +355,7 @@ updatedAt | The most recent updated date of the retrieved Warehouse
 
 ##Update Warehouses
 ```shell
-curl -X PUT --data "[{warehouseID: 'warehouse-123', updates: {name: 'Bayview Warehouse'}}]" "https://api.withhako.com/v0/warehouses"
+curl -X PUT --data "[{warehouseID: 'warehouse-010', updates: {name: 'Bayview Warehouse'}}]" "https://api.withhako.com/v0/warehouses"
   -u "your_API_key"
 ```
 
@@ -381,17 +365,8 @@ curl -X PUT --data "[{warehouseID: 'warehouse-123', updates: {name: 'Bayview War
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "warehouseID": "warehouse-010",
+    "name": "Bayview Warehouse"
   }
 ]
 ```
@@ -430,29 +405,14 @@ updatedAt | The most recent updated date of the updated Warehouse
 
 ##Delete Warehouses
 ```shell
-curl -X DELETE "https://api.withhako.com/v0/warehouses"
+curl -X --data "[{warehouseID: 'warehouse-010'}]" DELETE "https://api.withhako.com/v0/warehouses"
   -u "your_API_key"
 ```
 
 > Example Response:
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+["warehouse-010"]
 ```
 
 Permanently deletes Warehouse objects. This cannot be undone.
@@ -471,7 +431,7 @@ Parameter | Type | Required
 warehouseID | String | true
 
 ### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+_This endpoint returns an array of one or more strings upon success. The parameters for the returned strings are as follows:_
 
 Parameter | Type
 --------- | -------
@@ -479,7 +439,7 @@ warehouseID | The warehouseID of the deleted Warehouse
 
 # Inventory
 ## The Inventory Object
-The Inventory object represents the count of an Item that exists at a Warehouse. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept. One Warehouse has a quantity of 10 t-shirt Items and the other has 20.
+The **Inventory** object represents the count of an **Item** that exists at a specific **Warehouse**. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept. One Warehouse has a quantity of 10 t-shirt Items and the other has 20 t-shirt Items.
 
 ###Attributes
 Attribute | Type | Description
@@ -490,7 +450,7 @@ quantity | Number | The quantity of Items at specified Warehouse
 
 ##Create Inventory
 ```shell
-curl -X POST --data "[{sku: 'sku-000', warehouseID: 'warehouse-123', quantity: 15}]" "https://api.withhako.com/v0/inventory"
+curl -X POST --data "[{sku: 'hk-001', warehouseID: 'warehouse-010', quantity: 15}]" "https://api.withhako.com/v0/inventory"
   -u "your_API_key"
 ```
 
@@ -500,22 +460,14 @@ curl -X POST --data "[{sku: 'sku-000', warehouseID: 'warehouse-123', quantity: 1
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 15
   }
 ]
 ```
 
-Creates Inventory objects with the specified sku, warehouseID, and quantity at the specified Warehouse. If the specified sku and warehouseID already has inventory saved in Hako, this endpoint will return an error and suggest you update the inventory count for the specified sku and warehouseID instead.
+Creates **Inventory** objects with the specified SKU, warehouseID, and quantity. If the specified SKU and warehouseID already has inventory saved in Hako, this endpoint will return an error and suggest you update the inventory count for the specified SKU and warehouseID instead.
 
 Returns an **array** of created Inventory objects if successful.
 
@@ -526,8 +478,8 @@ Returns an **array** of created Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Required
---------- | -------
+Parameter | Type | Required
+--------- | ------- | -------
 warehouseID | String | true 
 sku | String | true
 quantity | Number | true
@@ -553,22 +505,14 @@ curl "https://api.withhako.com/v0/inventory"
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 15
   }
 ]
 ```
 
-Retrieves the inventory count of the requested sku and warehouseID. In the future, this endpoint will allow retrieval of inventory counts across all warehouses based on sku or warehouseID.
+Retrieves the inventory count of the requested SKU and warehouseID. In the future, this endpoint will allow retrieval of inventory counts across all warehouses based on SKU or warehouseID.
 
 Returns an **array** of retrieved Inventory objects if successful.
 
@@ -577,7 +521,7 @@ Returns an **array** of retrieved Inventory objects if successful.
 `GET https://api.withhako.com/v0/inventory`
 
 ### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+_This endpoint requires a JSON object as input. The parameters for the object are as follows:_
 
 Parameter | Type | Required
 --------- | ------- | -------
@@ -600,7 +544,7 @@ updatedAt | The most recent updated date of the retrieved Inventory object
 
 ##Update Inventory
 ```shell
-curl -X PUT --data "[{sku: 'sku-123', warehouseID: 'warehouse-192', updates: {quantity: 100}}]" "https://api.withhako.com/v0/inventory"
+curl -X PUT --data "[{sku: 'hk-001', warehouseID: 'warehouse-010', updates: {quantity: 14}}]" "https://api.withhako.com/v0/inventory"
   -u "your_API_key"
 ```
 
@@ -610,17 +554,9 @@ curl -X PUT --data "[{sku: 'sku-123', warehouseID: 'warehouse-192', updates: {qu
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 14
   }
 ]
 ```
@@ -662,7 +598,7 @@ updatedAt | The most recent updated date of the updated Warehouse
 
 ##Delete Inventory
 ```shell
-curl -X DELETE "https://api.withhako.com/v0/inventory"
+curl -X DELETE --data "[{sku: 'hk-001', warehouseID: 'warehouse-010'}]" "https://api.withhako.com/v0/inventory"
   -u "your_API_key"
 ```
 
@@ -671,23 +607,13 @@ curl -X DELETE "https://api.withhako.com/v0/inventory"
 ```json
 [
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010"
   }
 ]
 ```
 
-Permanently deletes Inventory objects. This is the same as assigning a quantity of 0 Items to a Warehouse. This cannot be undone.
+Permanently deletes Inventory objects. This is the same as assigning a quantity of **0** Items to a Warehouse. This cannot be undone.
 
 Returns an **array** of deleted Inventory dictionaries containing SKUs and warehouseIDs if successful.
 
