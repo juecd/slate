@@ -50,7 +50,7 @@ The Hako API allows up to **1000** requests per minute. If the max limit is reac
 
 # Items
 ## The Item Object
-The Item object represents a product identified by a unique SKU (stock keeping unit). For example, a customer's store may sell t-shirts, in which long sleeves and short sleeves are two unique Item types.
+The **Item** object represents a product identified by a unique SKU (stock keeping unit). For example, a customer's store may sell t-shirts, in which long sleeves and short sleeves are two unique Item types.
 
 ###Attributes
 Attribute | Type | Description
