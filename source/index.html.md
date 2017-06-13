@@ -32,17 +32,17 @@ All **POST**, **PUT**, and **DELETE** requests require an **array** of one or mo
 
 ```shell
 curl "api_endpoint_here" -H 'Content-Type: application/json' 
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 To gain access to the Hako API, please create an account on our [Dashboard](https://dashboard.withhako.com) or log into your existing account. There you will find a Live API Key with which you can make requests. 
 
-Hako expects your API key to be included in all API requests. Simply provide your API key as the basic auth username value using the `-u` flag:
+Hako expects your API key to be included in all API requests. Simply provide your API key as the basic auth username value using the `-u` flag. No password is needed:
 
-`-u "your_API_key"`
+`-u "your_API_key:"`
 
 <aside class="notice">
-You must replace <code>your_API_key</code> with your personal API key.
+Make sure to include the colon ":" after your API key when making cURL requests. Otherwise, cURL will ask for a password (to which you can press `enter` to skip the password).
 </aside>
 
 ## Rate Limiting
@@ -63,7 +63,7 @@ price | Number | The price of the product
 ##Create Items
 ```shell
 curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "name": "Long Sleeve Tshirt", "expires": 1496203446, "price": 25}]' https://api.withhako.com/v0/items"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -113,7 +113,7 @@ updatedAt | The most recent updated date of the created Item
 ##Retrieve Items
 ```shell
 curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v0/items"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -165,7 +165,7 @@ updatedAt | The most recent updated date of the retrieved Item
 ##Update Items
 ```shell
 curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "updates": {"name": "Men\"s Long Sleeve Tshirt"}}]' "https://api.withhako.com/v0/items"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -222,7 +222,7 @@ updatedAt | The most recent updated date of the updated Item
 ##Delete Items
 ```shell
 curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001"}]' "https://api.withhako.com/v0/items"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -266,7 +266,7 @@ warehouseID | String | A unique string identifying the Warehouse
 ##Create Warehouses
 ```shell
 curl -X POST -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "name": "San Francisco Warehouse"}]' "https://api.withhako.com/v0/warehouses"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -310,7 +310,7 @@ updatedAt | The most recent updated date of the created Warehouse
 ##Retrieve Warehouses
 ```shell
 curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v0/warehouses"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -356,7 +356,7 @@ updatedAt | The most recent updated date of the retrieved Warehouse
 ##Update Warehouses
 ```shell
 curl -X PUT -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "updates": {"name": "Bayview Warehouse"}}]' "https://api.withhako.com/v0/warehouses"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -406,7 +406,7 @@ updatedAt | The most recent updated date of the updated Warehouse
 ##Delete Warehouses
 ```shell
 curl -X DELETE -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010"}]' "https://api.withhako.com/v0/warehouses"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -451,7 +451,7 @@ quantity | Number | The quantity of Items at specified Warehouse
 ##Create Inventory
 ```shell
 curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "quantity": 15}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -496,7 +496,7 @@ quantity | The quantity of Item in the Warehouse
 ##Retrieve Inventory
 ```shell
 curl -H 'Content-Type: application/json' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -545,7 +545,7 @@ updatedAt | The most recent updated date of the retrieved Inventory object
 ##Update Inventory
 ```shell
 curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "updates": {"quantity": 14}}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
@@ -599,7 +599,7 @@ updatedAt | The most recent updated date of the updated Warehouse
 ##Delete Inventory
 ```shell
 curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010"}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key"
+  -u "your_API_key:"
 ```
 
 > Example Response:
