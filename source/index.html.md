@@ -19,6 +19,10 @@ Welcome to **Hako**! Here you'll find comprehensive information for integrating 
 
 The Hako API is organized around REST. All requests must include a `content-type` of `application/json` and the body must be a valid JSON.
 
+<aside class="notice">
+If using Postman, be sure to send POST request form data as "x-www-form-urlencoded".
+</aside>
+
 JSON is returned by all API responses, including errors.
 
 All **POST**, **PUT**, and **DELETE** requests require an **array** of one or more objects to create, update, or delete as input. Similarly, these calls output an **array** of affected objects upon success. This allows fewer calls to the Hako API when mass-updating inventory. In the future, the Hako API will allow individual object calls.
@@ -42,7 +46,7 @@ Hako expects your API key to be included in all API requests. Simply provide you
 `-u "your_API_key:"`
 
 <aside class="notice">
-Make sure to include the colon ":" after your API key when making cURL requests. Otherwise, cURL will ask for a password (to which you can press `enter` to skip the password).
+Make sure to include the colon ":" after your API key when making cURL requests. Otherwise, cURL will ask for a password (to which you can press enter to skip the password).
 </aside>
 
 ## Rate Limiting
