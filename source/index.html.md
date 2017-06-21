@@ -17,7 +17,7 @@ search: true
 
 Welcome to **Hako**! Here you'll find comprehensive information for integrating with our API endpoints. If you have any questions, you can find help in our [Slack community](https://hakosupport.slack.com/) or you may email support@withhako.com.
 
-The Hako API is organized around REST. All requests must include a `content-type` of `application/json` and the body must be a valid JSON.
+The Hako API is organized around REST. All requests must include a `content-type` header of `application/json` and the body must be a valid JSON.
 
 <aside class="notice">
 If using Postman, be sure to send POST request form data as "x-www-form-urlencoded".
