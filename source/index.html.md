@@ -20,7 +20,7 @@ Welcome to **Hako**! Here you'll find comprehensive information for integrating 
 The Hako API is organized around REST. All requests must include a `content-type` header of `application/json` and the body must be a valid JSON.
 
 <aside class="notice">
-If using Postman, be sure to send POST request form data as "x-www-form-urlencoded".
+If using Postman, be sure to send POST and PUT request data as "raw". Wrap all strings (including dictionary keys and values) with double quotes.
 </aside>
 
 JSON is returned by all API responses, including errors.
@@ -567,6 +567,8 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "ware
 
 Updates Inventory objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
 
+This endpoint will **override** any existing data for the given parameters, such as manually setting the inventory quantity to 0 (e.g., resolving a inventory discrepancy). This endpoint should not be used for regular inventory quantity updating. For regular quantity updating, see Incrementing Inventory or Decrementing Inventory.
+
 Returns an **array** of updated Inventory objects if successful.
 
 ### HTTP Request
@@ -588,6 +590,100 @@ Parameter | Type
 warehouseID | String
 sku | String
 quantity | Number
+
+### Response Parameters
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the updated Inventory Object
+sku | The SKU of the updated Inventory object
+quantity | The quantity of Items in Warehouse
+createdAt | The creation date of the updated Warehouse
+updatedAt | The most recent updated date of the updated Warehouse
+
+##Incrementing Inventory
+```shell
+curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "incrementBy": 2}]' "https://api.withhako.com/v0/inventory/increment"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 16
+  }
+]
+```
+
+Updates Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after receiving more stock of an item from a vendor.
+
+Returns an **array** of updated Inventory objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/inventory/increment`
+
+### Query Parameters
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+warehouseID | String | true
+incrementBy | Number |  true
+
+### Response Parameters
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+Parameter | Type
+--------- | -------
+warehouseID | The warehouseID of the updated Inventory Object
+sku | The SKU of the updated Inventory object
+quantity | The quantity of Items in Warehouse
+createdAt | The creation date of the updated Warehouse
+updatedAt | The most recent updated date of the updated Warehouse
+
+##Decrementing Inventory
+```shell
+curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "decrementBy": 2}]' "https://api.withhako.com/v0/inventory/decrement"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 12
+  }
+]
+```
+
+Updates Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after selling an item to a customer.
+
+Returns an **array** of updated Inventory objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/inventory/decrement`
+
+### Query Parameters
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+Parameter | Type | Required
+--------- | ------- | -------
+sku | String | true
+warehouseID | String | true
+decrementBy | Number |  true
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
