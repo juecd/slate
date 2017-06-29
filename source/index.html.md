@@ -57,12 +57,12 @@ The Hako API allows up to **120** requests per minute. If the max limit is reach
 The **Item** object represents a product identified by a unique SKU (stock keeping unit). For example, a customer's store may sell t-shirts, in which long sleeves and short sleeves are two unique Item types.
 
 ###Attributes
-Attribute | Type | Description
----------- | ------- | -------
-name | String | The name of the Item
-sku | String | The unique SKU for the Item
-expires | Number (unix timestamp) | The unix date in which the product expires, used for perishable products
-price | Number | The price of the product
+| Attribute | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| name      | String                  | The name of the Item                     |
+| sku       | String                  | The unique SKU for the Item              |
+| expires   | Number (unix timestamp) | The unix date in which the product expires, used for perishable products |
+| price     | Number                  | The price of the product                 |
 
 ##Create Items
 ```shell
@@ -95,24 +95,24 @@ Returns an **array** of created Item objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true 
-name | String | false
-expires | Number (unix timestamp) | false
-price | Number | false
+| Parameter | Type                    | Required |
+| --------- | ----------------------- | -------- |
+| sku       | String                  | true     |
+| name      | String                  | false    |
+| expires   | Number (unix timestamp) | false    |
+| price     | Number                  | false    |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-sku | The SKU of the created Item
-name | The name of the created Item if specified on input
-expires | The expiration date of the created Item if specified on input
-price | The price of the created Item if specified on input
-createdAt | The creation date of the created Item
-updatedAt | The most recent updated date of the created Item
+| Parameter | Type                                     |
+| --------- | ---------------------------------------- |
+| sku       | The SKU of the created Item              |
+| name      | The name of the created Item if specified on input |
+| expires   | The expiration date of the created Item if specified on input |
+| price     | The price of the created Item if specified on input |
+| createdAt | The creation date of the created Item    |
+| updatedAt | The most recent updated date of the created Item |
 
 ##Retrieve Items
 ```shell
@@ -145,26 +145,26 @@ Returns an **array** of retrieved Item objects if successful.
 ### Query Parameters
 _This endpoint requires a JSON object as input. The parameters for the object are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | false 
-name | String | false
-expires | Number (unix timestamp) | false
-createdAt | Number (unix timestamp) | false
-updatedAt | Number (unix timestamp) | false
-price | Number | false
+| Parameter | Type                    | Required |
+| --------- | ----------------------- | -------- |
+| sku       | String                  | false    |
+| name      | String                  | false    |
+| expires   | Number (unix timestamp) | false    |
+| createdAt | Number (unix timestamp) | false    |
+| updatedAt | Number (unix timestamp) | false    |
+| price     | Number                  | false    |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-sku | The SKU of the retrieved Item
-name | The name of the retrieved Item if exists
-expires | The expiration date of the retrieved Item if exists
-price | The price of the retrieved Item if exists
-createdAt | The creation date of the retrieved Item
-updatedAt | The most recent updated date of the retrieved Item
+| Parameter | Type                                     |
+| --------- | ---------------------------------------- |
+| sku       | The SKU of the retrieved Item            |
+| name      | The name of the retrieved Item if exists |
+| expires   | The expiration date of the retrieved Item if exists |
+| price     | The price of the retrieved Item if exists |
+| createdAt | The creation date of the retrieved Item  |
+| updatedAt | The most recent updated date of the retrieved Item |
 
 ##Update Items
 ```shell
@@ -197,31 +197,31 @@ Returns an **array** of updated Item objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
-updates | JSON dictionary |  true
+| Parameter | Type            | Required |
+| --------- | --------------- | -------- |
+| sku       | String          | true     |
+| updates   | JSON dictionary | true     |
 
 ### Update Parameter Options
-Parameter | Type
---------- | ------- | -------
-sku | String
-name | String
-expires | Number (unix timestamp)
-price | Number
+| Parameter | Type                    |
+| --------- | ----------------------- |
+| sku       | String                  |
+| name      | String                  |
+| expires   | Number (unix timestamp) |
+| price     | Number                  |
 
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-sku | The SKU of the updated Item
-name | The name of the updated Item if exists
-expires | The expiration date of the updated Item if exists
-price | The price of the updated Item if exists
-createdAt | The creation date of the updated Item
-updatedAt | The most recent updated date of the updated Item
+| Parameter | Type                                     |
+| --------- | ---------------------------------------- |
+| sku       | The SKU of the updated Item              |
+| name      | The name of the updated Item if exists   |
+| expires   | The expiration date of the updated Item if exists |
+| price     | The price of the updated Item if exists  |
+| createdAt | The creation date of the updated Item    |
+| updatedAt | The most recent updated date of the updated Item |
 
 ##Delete Items
 ```shell
@@ -246,26 +246,26 @@ Returns an **array** of deleted Item SKUs if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
+| Parameter | Type   | Required |
+| --------- | ------ | -------- |
+| sku       | String | true     |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more strings upon success. The parameters for the returned strings are as follows:_
 
-Parameter | Type
---------- | -------
-sku | The SKU of the deleted Item
+| Parameter | Type                        |
+| --------- | --------------------------- |
+| sku       | The SKU of the deleted Item |
 
 # Warehouses
 ## The Warehouse Object
 The **Warehouse** object represents locations where **Items** reside. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept.
 
 ###Attributes
-Attribute | Type | Description
----------- | ------- | -------
-name | String | The name of the Warehouse
-warehouseID | String | A unique string identifying the Warehouse
+| Attribute   | Type   | Description                              |
+| ----------- | ------ | ---------------------------------------- |
+| name        | String | The name of the Warehouse                |
+| warehouseID | String | A unique string identifying the Warehouse |
 
 ##Create Warehouses
 ```shell
@@ -296,20 +296,20 @@ Returns an **array** of created Warehouse objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | true 
-name | String | false
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| warehouseID | String | true     |
+| name        | String | false    |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the created Warehouse
-name | The name of the created Warehouse
-createdAt | The creation date of the created Warehouse
-updatedAt | The most recent updated date of the created Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the created Warehouse |
+| name        | The name of the created Warehouse        |
+| createdAt   | The creation date of the created Warehouse |
+| updatedAt   | The most recent updated date of the created Warehouse |
 
 ##Retrieve Warehouses
 ```shell
@@ -340,22 +340,22 @@ Returns an **array** of retrieved Warehouses objects if successful.
 ### Query Parameters
 _This endpoint requires a JSON object as input. The parameters for the object are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | false 
-name | String | false
-createdAt | Number (unix timestamp) | false
-updatedAt | Number (unix timestamp) | false
+| Parameter   | Type                    | Required |
+| ----------- | ----------------------- | -------- |
+| warehouseID | String                  | false    |
+| name        | String                  | false    |
+| createdAt   | Number (unix timestamp) | false    |
+| updatedAt   | Number (unix timestamp) | false    |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the retrieved Warehouse
-name | The name of the retrieved Warehouse
-createdAt | The creation date of the retrieved Warehouse
-updatedAt | The most recent updated date of the retrieved Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the retrieved Warehouse |
+| name        | The name of the retrieved Warehouse      |
+| createdAt   | The creation date of the retrieved Warehouse |
+| updatedAt   | The most recent updated date of the retrieved Warehouse |
 
 ##Update Warehouses
 ```shell
@@ -386,26 +386,26 @@ Returns an **array** of updated Warehouse objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | true
-updates | JSON dictionary |  true
+| Parameter   | Type            | Required |
+| ----------- | --------------- | -------- |
+| warehouseID | String          | true     |
+| updates     | JSON dictionary | true     |
 
 ### Update Parameter Options
-Parameter | Type
---------- | ------- | -------
-warehouseID | String
-name | String
+| Parameter   | Type   |
+| ----------- | ------ |
+| warehouseID | String |
+| name        | String |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the updated Warehouse
-name | The name of the updated Warehouse
-createdAt | The creation date of the updated Warehouse
-updatedAt | The most recent updated date of the updated Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the updated Warehouse |
+| name        | The name of the updated Warehouse        |
+| createdAt   | The creation date of the updated Warehouse |
+| updatedAt   | The most recent updated date of the updated Warehouse |
 
 ##Delete Warehouses
 ```shell
@@ -430,27 +430,27 @@ Returns an **array** of deleted Warehouse warehouseIDs if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | true
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| warehouseID | String | true     |
 
 ### Response Parameters
 _This endpoint returns an array of one or more strings upon success. The parameters for the returned strings are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the deleted Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the deleted Warehouse |
 
 # Inventory
 ## The Inventory Object
 The **Inventory** object represents the count of an **Item** that exists at a specific **Warehouse**. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept. One Warehouse has a quantity of 10 t-shirt Items and the other has 20 t-shirt Items.
 
 ###Attributes
-Attribute | Type | Description
----------- | ------- | -------
-sku | String | The SKU of the Item
-warehouseID | String | The warehouseID location of the Item
-quantity | Number | The quantity of Items at specified Warehouse
+| Attribute   | Type   | Description                              |
+| ----------- | ------ | ---------------------------------------- |
+| sku         | String | The SKU of the Item                      |
+| warehouseID | String | The warehouseID location of the Item     |
+| quantity    | Number | The quantity of Items at specified Warehouse |
 
 ##Create Inventory
 ```shell
@@ -482,20 +482,20 @@ Returns an **array** of created Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | true 
-sku | String | true
-quantity | Number | true
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| warehouseID | String | true     |
+| sku         | String | true     |
+| quantity    | Number | true     |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the Warehouse that has Inventory
-sku | The SKU of the Item that has Inventory
-quantity | The quantity of Item in the Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the Warehouse that has Inventory |
+| sku         | The SKU of the Item that has Inventory   |
+| quantity    | The quantity of Item in the Warehouse    |
 
 ##Retrieve Inventory
 ```shell
@@ -527,24 +527,24 @@ Returns an **array** of retrieved Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires a JSON object as input. The parameters for the object are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-warehouseID | String | false 
-sku | String | false
-quantity | Number | false
-createdAt | Number (unix timestamp) | false
-updatedAt | Number (unix timestamp) | false
+| Parameter   | Type                    | Required |
+| ----------- | ----------------------- | -------- |
+| warehouseID | String                  | false    |
+| sku         | String                  | false    |
+| quantity    | Number                  | false    |
+| createdAt   | Number (unix timestamp) | false    |
+| updatedAt   | Number (unix timestamp) | false    |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the retrieved Inventory object
-sku | The SKU of the retrieved Inventory object
-quantity | The quantity of Items in the Warehouse
-createdAt | The creation date of the retrieved Inventory object
-updatedAt | The most recent updated date of the retrieved Inventory object
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the retrieved Inventory object |
+| sku         | The SKU of the retrieved Inventory object |
+| quantity    | The quantity of Items in the Warehouse   |
+| createdAt   | The creation date of the retrieved Inventory object |
+| updatedAt   | The most recent updated date of the retrieved Inventory object |
 
 ##Update Inventory
 ```shell
@@ -578,29 +578,29 @@ Returns an **array** of updated Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
-warehouseID | String | true
-updates | JSON dictionary |  true
+| Parameter   | Type            | Required |
+| ----------- | --------------- | -------- |
+| sku         | String          | true     |
+| warehouseID | String          | true     |
+| updates     | JSON dictionary | true     |
 
 ### Update Parameter Options
-Parameter | Type
---------- | -------
-warehouseID | String
-sku | String
-quantity | Number
+| Parameter   | Type   |
+| ----------- | ------ |
+| warehouseID | String |
+| sku         | String |
+| quantity    | Number |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the updated Inventory Object
-sku | The SKU of the updated Inventory object
-quantity | The quantity of Items in Warehouse
-createdAt | The creation date of the updated Warehouse
-updatedAt | The most recent updated date of the updated Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the updated Inventory Object |
+| sku         | The SKU of the updated Inventory object  |
+| quantity    | The quantity of Items in Warehouse       |
+| createdAt   | The creation date of the updated Warehouse |
+| updatedAt   | The most recent updated date of the updated Warehouse |
 
 ##Incrementing Inventory
 ```shell
@@ -632,22 +632,22 @@ Returns an **array** of updated Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
-warehouseID | String | true
-incrementBy | Number |  true
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| sku         | String | true     |
+| warehouseID | String | true     |
+| incrementBy | Number | true     |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the updated Inventory Object
-sku | The SKU of the updated Inventory object
-quantity | The quantity of Items in Warehouse
-createdAt | The creation date of the updated Warehouse
-updatedAt | The most recent updated date of the updated Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the updated Inventory Object |
+| sku         | The SKU of the updated Inventory object  |
+| quantity    | The quantity of Items in Warehouse       |
+| createdAt   | The creation date of the updated Warehouse |
+| updatedAt   | The most recent updated date of the updated Warehouse |
 
 ##Decrementing Inventory
 ```shell
@@ -679,24 +679,86 @@ Returns an **array** of updated Inventory objects if successful.
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
-warehouseID | String | true
-decrementBy | Number |  true
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| sku         | String | true     |
+| warehouseID | String | true     |
+| decrementBy | Number | true     |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-warehouseID | The warehouseID of the updated Inventory Object
-sku | The SKU of the updated Inventory object
-quantity | The quantity of Items in Warehouse
-createdAt | The creation date of the updated Warehouse
-updatedAt | The most recent updated date of the updated Warehouse
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the updated Inventory Object |
+| sku         | The SKU of the updated Inventory object  |
+| quantity    | The quantity of Items in Warehouse       |
+| createdAt   | The creation date of the updated Warehouse |
+| updatedAt   | The most recent updated date of the updated Warehouse |
+
+## Transferring Inventory
+
+```shell
+curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "sourceWarehouseID": "warehouse-010", "destinationWarehouseID": "warehouse-011", "quantity": 25}]' "https://api.withhako.com/v0/inventory/transfer"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 12
+  },
+  {
+    "id": 2,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-011",
+    "quantity": 37
+  }
+]
+```
+
+Transfers inventory from one warehouse (**sourceWarehouseID**) to another (**destinationWarehouseID**). One use case of transferring inventory is from the main warehouse to a storefront.
+
+<aside class="notice">
+There must be at least the quantity specified in the warehouse with sourceWarehouseID in order to successfully call this endpoint. Additionally, SKU, sourceWarehouseID, and destinationWarehouseID must already exist as Items and Warehouses.
+</aside>
+
+Returns an **array** of updated Inventory objects if successful.
+
+### HTTP Request
+
+`PUT https://api.withhako.com/v0/inventory/transfer`
+
+### Query Parameters
+
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter              | Type   | Required |
+| ---------------------- | ------ | -------- |
+| sku                    | String | true     |
+| sourceWarehouseID      | String | true     |
+| destinationWarehouseID | String | true     |
+| quantity               | Number | true     |
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| warehouseID | The warehouseID of the updated Inventory Object |
+| sku         | The SKU of the updated Inventory object  |
+| quantity    | The quantity of Items in Warehouse       |
+| createdAt   | The creation date of the updated Warehouse |
+| updatedAt   | The most recent updated date of the updated Warehouse |
 
 ##Delete Inventory
+
 ```shell
 curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010"}]' "https://api.withhako.com/v0/inventory"
   -u "your_API_key:"
@@ -724,16 +786,16 @@ Returns an **array** of deleted Inventory dictionaries containing SKUs and wareh
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
 
-Parameter | Type | Required
---------- | ------- | -------
-sku | String | true
-warehouseID | String | true
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| sku         | String | true     |
+| warehouseID | String | true     |
 
 ### Response Parameters
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-Parameter | Type
---------- | -------
-sku | The SKU of the deleted Inventory object
-warehouseID | The warehouseID of the deleted Inventory object
+| Parameter   | Type                                     |
+| ----------- | ---------------------------------------- |
+| sku         | The SKU of the deleted Inventory object  |
+| warehouseID | The warehouseID of the deleted Inventory object |
 
