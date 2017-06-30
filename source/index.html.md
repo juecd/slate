@@ -550,6 +550,10 @@ curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "war
 
 Creates **Inventory** objects with the specified SKU, warehouseID, and quantity. If the specified SKU and warehouseID already has inventory saved in Hako, this endpoint will return an error and suggest you update the inventory count for the specified SKU and warehouseID instead.
 
+<aside class="notice">
+Both an Item with specified SKU and Warehouse with specified warehouseID must already exist before you can instantiate Inventory.
+</aside>
+
 Returns an **array** of created Inventory objects if successful.
 
 ### HTTP Request
@@ -676,7 +680,7 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "ware
 ]
 ```
 
-Updates Inventory objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
+Updates existing Inventory objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
 
 This endpoint will **override** any existing data for the given parameters, such as manually setting the inventory quantity to 0 (e.g., resolving a inventory discrepancy). This endpoint should not be used for regular inventory quantity updating. For regular quantity updating, see Incrementing Inventory or Decrementing Inventory.
 
@@ -732,7 +736,7 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "ware
 ]
 ```
 
-Updates Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after receiving more stock of an item from a vendor.
+Updates existing Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after receiving more stock of an item from a vendor.
 
 Returns an **array** of updated Inventory objects if successful.
 
@@ -779,7 +783,7 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "ware
 ]
 ```
 
-Updates Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after selling an item to a customer.
+Updates existing Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after selling an item to a customer.
 
 Returns an **array** of updated Inventory objects if successful.
 
@@ -833,7 +837,7 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "sour
 ]
 ```
 
-Transfers inventory from one warehouse (**sourceWarehouseID**) to another (**destinationWarehouseID**). One use case of transferring inventory is from the main warehouse to a storefront.
+Transfers existing Inventory from one warehouse (**sourceWarehouseID**) to another (**destinationWarehouseID**). One use case of transferring inventory is from the main warehouse to a storefront.
 
 <aside class="notice">
 There must be at least the quantity specified in the warehouse with sourceWarehouseID in order to successfully call this endpoint. Additionally, SKU, sourceWarehouseID, and destinationWarehouseID must already exist as Items and Warehouses.
