@@ -20,15 +20,15 @@ Welcome to **Hako**! Here you'll find comprehensive information for integrating 
 The Hako API is organized around REST. All requests must include a `content-type` header of `application/json` and the body must be a valid JSON.
 
 <aside class="notice">
-If using Postman, be sure to send POST and PUT request data as "raw". Wrap all strings (including dictionary keys and values) with double quotes.
+If using Postman, be sure to send POST and PATCH request data as "raw". Wrap all strings (including dictionary keys and values) with double quotes.
 </aside>
 
 JSON is returned by all API responses, including errors.
 
-All **POST**, **PUT**, and **DELETE** requests require an **array** of one or more objects to create, update, or delete as input. Similarly, these calls output an **array** of affected objects upon success. This allows fewer calls to the Hako API when mass-updating inventory. In the future, the Hako API will allow individual object calls.
+All **POST**, **PATCH**, and **DELETE** requests require an **array** of one or more objects to create, update, or delete as input. Similarly, these calls output an **array** of affected objects upon success. This allows fewer calls to the Hako API when mass-updating inventory. In the future, the Hako API may allow individual object calls.
 
 ##Hosts Available
-`https://api.withhako.com/v0/ (Production)`
+`https://api.withhako.com/v1/ (Production)`
 
 # API Keys and Access
 
@@ -67,7 +67,7 @@ The **Item** object represents a product identified by a unique SKU (stock keepi
 
 ##Create Items
 ```shell
-curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "name": "Long Sleeve Tshirt", "expires": 1496203446, "price": 25}]' https://api.withhako.com/v0/items"
+curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "name": "Long Sleeve Tshirt", "expires": 1496203446, "price": 25, "inventory": [{"warehouseID": "w-SF", "quantity": 105}]}]' https://api.withhako.com/v1/items"
   -u "your_API_key:"
 ```
 
@@ -80,7 +80,11 @@ curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "nam
     "sku": "hk-001",
     "name": "Long Sleeve Tshirt",
     "expires": 1496203446,
-    "price": 25
+    "price": 25,
+    "Inventories": [{
+      "warehouseID": "w-SF",
+      "quantity": 105
+    }]
   }
 ]
 ```
@@ -91,7 +95,7 @@ Returns an **array** of created Item objects if successful.
 
 ### HTTP Request
 
-`POST https://api.withhako.com/v0/items`
+`POST https://api.withhako.com/v1/items`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -102,18 +106,34 @@ _This endpoint requires an **array** of one or more objects as input. The parame
 | name      | String                  | false    |
 | expires   | Number (unix timestamp) | false    |
 | price     | Number                  | false    |
+| inventory | Array                   | false    |
+
+### Inventory Parameters Options
+
+<aside class="notice">
+Important! A warehouse with the specified warehouseID must exist before you can create Items with inventory or you will receive an error as the response. You should create your warehouses before creating Items with inventory. You may initialize Items without inventory, though, and update the Item with inventory after creating the warehouse.
+</aside>
+
+_The Inventory parameter takes an array of objects, which shoud be defined as follows:_
+
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| warehouseID | String | true     |
+| quantity    | Number | true     |
 
 ### Response Parameters
+
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-| Parameter | Type                    | Description                              |
-| --------- | ----------------------- | ---------------------------------------- |
-| sku       | String                  | The SKU of the created Item              |
-| name      | String                  | The name of the created Item if specified on input |
-| expires   | Number (unix timestamp) | The expiration date of the created Item if specified on input |
-| price     | Number                  | The price of the created Item if specified on input |
-| createdAt | Number (unix timestamp) | The creation date of the created Item    |
-| updatedAt | Number (unix timestamp) | The most recent updated date of the created Item |
+| Parameter   | Type                    | Description                              |
+| ----------- | ----------------------- | ---------------------------------------- |
+| sku         | String                  | The SKU of the created Item              |
+| name        | String                  | The name of the created Item if specified on input |
+| expires     | Number (unix timestamp) | The expiration date of the created Item if specified on input |
+| price       | Number                  | The price of the created Item if specified on input |
+| createdAt   | Number (unix timestamp) | The creation date of the created Item    |
+| updatedAt   | Number (unix timestamp) | The most recent updated date of the created Item |
+| Inventories | JSON dictionary         | All inventory quantities per Warehouse (based on warehouseID) that exist for the created Item |
 
 ##Retrieve Items
 ```shell
@@ -131,12 +151,12 @@ curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v0/ite
     "name": "Long Sleeve Tshirt",
     "expires": 1496203446,
     "price": 25,
-    "Inventories": {
+    "Inventories": [{
       "id": 5,
       "sku": "hk-001",
       "warehouseID": "w-SF",
       "quantity": 14
-    }
+    }]
   }
 ]
 ```
@@ -147,7 +167,7 @@ Returns an **array** of retrieved Item objects if successful.
 
 ### HTTP Request
 
-`GET https://api.withhako.com/v0/items`
+`GET https://api.withhako.com/v1/items`
 
 ### Query Parameters
 _This endpoint requires a JSON object as input. The parameters for the object are as follows:_
@@ -160,6 +180,16 @@ _This endpoint requires a JSON object as input. The parameters for the object ar
 | createdAt | JSON dictionary | false    |
 | updatedAt | JSON dictionary | false    |
 | price     | JSON dictionary | false    |
+| inventory | JSON dictionary | false    |
+
+### Inventory Parameter Options
+
+_This parameter takes a JSON dictionary as input, with at least one or more of the following parameters in the Inventory query parameters. For example, searching by warehouseID will retrieve all the specified Item in the specified Warehouse, while searching by quantity will search for all Warehouses with at least "quantity" Items._
+
+| Parameter   | Type   |
+| ----------- | ------ |
+| warehouseID | String |
+| quantity    | Number |
 
 ### Expires Parameter Options
 
@@ -221,7 +251,7 @@ _This endpoint returns an **array** of one or more objects upon success. The par
 
 ##Update Items
 ```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "updates": {"name": "Men\"s Long Sleeve Tshirt"}}]' "https://api.withhako.com/v0/items"
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "updates": {"name": "Men\"s Long Sleeve Tshirt", "inventory": [{"warehouseID": "w-SF", "quantity": 100}]}}]' "https://api.withhako.com/v1/items"
   -u "your_API_key:"
 ```
 
@@ -234,7 +264,11 @@ curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "upda
     "sku": "hk-001",
     "name": "Men\'s Long Sleeve Tshirt",
     "expires": 1496203446,
-    "price": 25
+    "price": 25,
+    "Inventories": [{
+      "warehouseID": "w-SF",
+      "quantity": 100
+    }]
   }
 ]
 ```
@@ -245,7 +279,7 @@ Returns an **array** of updated Item objects if successful.
 
 ### HTTP Request
 
-`PUT https://api.withhako.com/v0/items`
+`PATCH https://api.withhako.com/v1/items`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -262,23 +296,222 @@ _This endpoint requires an **array** of one or more objects as input. The parame
 | name      | String                  |
 | expires   | Number (unix timestamp) |
 | price     | Number                  |
+| inventory | Array                   |
 
+### Inventory Parameter Options
+
+Updating Inventory with this endpoint will **override** any existing data for the given parameters, such as manually setting the inventory quantity to 0 (e.g., resolving a inventory discrepancy). This endpoint should not be used for regular inventory quantity updating. For regular quantity updating, see Incrementing Inventory or Decrementing Inventory. You can use this Update endpoint to instantiate Inventory quantities if you did not do so when you first created the Item.
+
+<aside class="notice">
+Important! A warehouse with the specified warehouseID must exist before you can update Items with inventory or you will receive an error as the response. You should create your warehouses before updating Items with inventory.
+</aside>
+
+_This endpoint expects an **array** of objects, which should follow the convention below:_
+
+| Parameter   | Type   |
+| ----------- | ------ |
+| warehouseID | String |
+| quantity    | Number |
 
 ### Response Parameters
+
 _This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
 
-| Parameter | Type                    | Description                              |
-| --------- | ----------------------- | ---------------------------------------- |
-| sku       | String                  | The SKU of the updated Item              |
-| name      | String                  | The name of the updated Item if exists   |
-| expires   | Number (unix timestamp) | The expiration date of the updated Item if exists |
-| price     | Number                  | The price of the updated Item if exists  |
-| createdAt | Number (unix timestamp) | The creation date of the updated Item    |
-| updatedAt | Number (unix timestamp) | The most recent updated date of the updated Item |
+| Parameter   | Type                    | Description                              |
+| ----------- | ----------------------- | ---------------------------------------- |
+| sku         | String                  | The SKU of the updated Item              |
+| name        | String                  | The name of the updated Item if exists   |
+| expires     | Number (unix timestamp) | The expiration date of the updated Item if exists |
+| price       | Number                  | The price of the updated Item if exists  |
+| createdAt   | Number (unix timestamp) | The creation date of the updated Item    |
+| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Item |
+| Inventories | JSON dictionary         | All inventory quantities per Warehouse (based on warehouseID) that exist for the updated Item |
+
+## Incrementing Item Inventory
+
+```shell
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "incrementBy": 2}]' "https://api.withhako.com/v1/items/inventory/increment"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "name": "Men\'s Long Sleeve Tshirt",
+    "expires": 1496203446,
+    "price": 25,
+    "Inventories": [{
+      "warehouseID": "w-SF",
+      "quantity": 16
+    }]
+  }
+]
+```
+
+Updates existing Items' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after receiving more stock of an item from a vendor.
+
+Returns an **array** of updated Item objects if successful.
+
+### HTTP Request
+
+`PATCH https://api.withhako.com/v1/items/inventory/increment`
+
+### Query Parameters
+
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| sku         | String | true     |
+| warehouseID | String | true     |
+| incrementBy | Number | true     |
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter   | Type                    | Description                              |
+| ----------- | ----------------------- | ---------------------------------------- |
+| sku         | String                  | The SKU of the updated Item              |
+| name        | String                  | The name of the updated Item if exists   |
+| expires     | Number (unix timestamp) | The expiration date of the updated Item if exists |
+| price       | Number                  | The price of the updated Item if exists  |
+| createdAt   | Number (unix timestamp) | The creation date of the updated Item    |
+| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Item |
+| Inventories | JSON dictionary         | All inventory quantities per Warehouse (based on warehouseID) that exist for the updated Item |
+
+## Decrementing Item Inventory
+
+```shell
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "decrementBy": 2}]' "https://api.withhako.com/v1/items/inventory/decrement"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "name": "Men\'s Long Sleeve Tshirt",
+    "expires": 1496203446,
+    "price": 25,
+    "Inventories": [{
+      "warehouseID": "w-SF",
+      "quantity": 12
+    }]
+  }
+]
+```
+
+Updates existing Items' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after selling an item to a customer.
+
+Returns an **array** of updated Item objects if successful.
+
+### HTTP Request
+
+`PATCH https://api.withhako.com/v1/items/inventory/decrement`
+
+### Query Parameters
+
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| sku         | String | true     |
+| warehouseID | String | true     |
+| decrementBy | Number | true     |
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter   | Type                    | Description                              |
+| ----------- | ----------------------- | ---------------------------------------- |
+| sku         | String                  | The SKU of the updated Item              |
+| name        | String                  | The name of the updated Item if exists   |
+| expires     | Number (unix timestamp) | The expiration date of the updated Item if exists |
+| price       | Number                  | The price of the updated Item if exists  |
+| createdAt   | Number (unix timestamp) | The creation date of the updated Item    |
+| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Item |
+| Inventories | JSON dictionary         | All inventory quantities per Warehouse (based on warehouseID) that exist for the updated Item |
+
+## Transferring Item Inventory
+
+```shell
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "sourceWarehouseID": "warehouse-010", "destinationWarehouseID": "warehouse-011", "quantity": 25}]' "https://api.withhako.com/v1/items/inventory/transfer"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-010",
+    "quantity": 12
+  },
+  {
+    "id": 2,
+    "sku": "hk-001",
+    "warehouseID": "warehouse-011",
+    "quantity": 37
+  }
+]
+```
+
+Transfers existing Item inventory from one warehouse (**sourceWarehouseID**) to another (**destinationWarehouseID**). One use case of transferring inventory is from the main warehouse to a storefront.
+
+<aside class="notice">
+There must be at least the quantity specified in the warehouse with sourceWarehouseID in order to successfully call this endpoint. Additionally, SKU, sourceWarehouseID, and destinationWarehouseID must already exist as Items and Warehouses.
+</aside>
+
+Returns an **array** of updated Item objects if successful.
+
+### HTTP Request
+
+`PATCH https://api.withhako.com/v1/items/inventory/transfer`
+
+### Query Parameters
+
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter              | Type   | Required |
+| ---------------------- | ------ | -------- |
+| sku                    | String | true     |
+| sourceWarehouseID      | String | true     |
+| destinationWarehouseID | String | true     |
+| quantity               | Number | true     |
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter   | Type                    | Description                              |
+| ----------- | ----------------------- | ---------------------------------------- |
+| sku         | String                  | The SKU of the updated Item              |
+| name        | String                  | The name of the updated Item if exists   |
+| expires     | Number (unix timestamp) | The expiration date of the updated Item if exists |
+| price       | Number                  | The price of the updated Item if exists  |
+| createdAt   | Number (unix timestamp) | The creation date of the updated Item    |
+| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Item |
+| Inventories | JSON dictionary         | All inventory quantities per Warehouse (based on warehouseID) that exist for the updated Item |
 
 ##Delete Items
+
 ```shell
-curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001"}]' "https://api.withhako.com/v0/items"
+curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001"}]' "https://api.withhako.com/v1/items"
   -u "your_API_key:"
 ```
 
@@ -294,7 +527,7 @@ Returns an **array** of deleted Item SKUs if successful.
 
 ### HTTP Request
 
-`DELETE https://api.withhako.com/v0/items`
+`DELETE https://api.withhako.com/v1/items`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -310,6 +543,255 @@ _This endpoint returns an **array** of one or more strings upon success. The par
 | --------- | ------ | --------------------------- |
 | sku       | String | The SKU of the deleted Item |
 
+# Bundles
+## The Bundle Object
+The **Bundle** object represents a collection of **Items**. The Bundle object can be used to represent a variety of product groupings. For example, a customer might sell a gift collection as a Bundle, which includes a variety of Item products. Or, a Bundle might represent a finished, assembled product, while the Items represent the raw materials of the Bundle.
+
+###Attributes
+| Attribute | Type   | Description                              |
+| --------- | ------ | ---------------------------------------- |
+| sku       | String | The unique SKU of the Bundle             |
+| name      | String | The name of the Bundle                   |
+| item_skus | Array  | Array of the Item SKUs that comprise the Bundle |
+| price     | Number | The price of the Bundle                  |
+
+##Create Bundles
+```shell
+curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "bundle-001", "name": "Gift Collection", "item_skus": [{"sku": "item-sku-001", "quantity": 15}]}]' "https://api.withhako.com/v1/bundles"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "bundle-001",
+    "name": "Gift Collection",
+    "item_skus": [
+      {
+        "sku": "item-sku-001",
+        "quantity": 15
+      }
+    ]
+  }
+]
+```
+
+Creates **Bundle** objects with the specified SKU and any other optional parameters provided. SKU must be unique to all other existing Bundles.
+
+Returns an **array** of created Bundle objects if successful.
+
+### HTTP Request
+
+`POST https://api.withhako.com/v1/bundles`
+
+### Query Parameters
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter   | Type   | Required |
+| ----------- | ------ | -------- |
+| warehouseID | String | true     |
+| name        | String | false    |
+| item_skus   | Array  | false    |
+| price       | Number | false    |
+
+### Response Parameters
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| sku       | String                  | The SKU of the created Bundle            |
+| name      | String                  | The name of the created Bundle           |
+| createdAt | Number (unix timestamp) | The creation date of the created Bundle  |
+| updatedAt | Number (unix timestamp) | The most recent updated date of the created Bundle |
+| item_skus | Array                   | The Item SKUs that comprise the Bundle, if specified |
+| price     | Number                  | The price of the Bundle, if specified    |
+
+##Retrieve Bundles
+```shell
+curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v1/bundles"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "bundle-001",
+    "name": "Gift Collection",
+    "item_skus": [
+      {
+        "sku": "item-sku-001",
+        "quantity": 15
+      }
+    ]
+  }
+]
+```
+
+Retrieves the details of existing Bundles based on the search parameters given in the request.
+
+Returns an **array** of retrieved Bundle objects if successful.
+
+### HTTP Request
+
+`GET https://api.withhako.com/v1/bundles`
+
+### Query Parameters
+_This endpoint requires a JSON object as input. The parameters for the object are as follows:_
+
+| Parameter | Type            | Required |
+| --------- | --------------- | -------- |
+| sku       | String          | false    |
+| name      | String          | false    |
+| createdAt | JSON dictionary | false    |
+| updatedAt | JSON dictionary | false    |
+| price     | Number          | false    |
+
+### CreatedAt Parameter Options
+
+_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
+| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
+| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
+| lt        | JSON dictionary         | Less than a unix timestamp               |
+
+### UpdatedAt Parameter Options
+
+_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
+| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
+| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
+| lt        | JSON dictionary         | Less than a unix timestamp               |
+
+### Price Parameter Options
+
+_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
+| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
+| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
+| lt        | JSON dictionary         | Less than a unix timestamp               |
+
+### Response Parameters
+
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| sku       | String                  | The SKU of the retrieved Bundle          |
+| name      | String                  | The name of the retrieved Bundle         |
+| createdAt | Number (unix timestamp) | The creation date of the retrieved Bundle |
+| updatedAt | Number (unix timestamp) | The most recent updated date of the retrieved Bundle |
+| item_skus | Array                   | All Item SKUs that comprise the Bundle   |
+| price     | Number                  | The price of the Bundle                  |
+
+##Update Bundles
+```shell
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"sku": "bundle-001", "updates": {"name": "Limited Time Gift Collection", "item_skus": [{"sku": "item-sku-001", "quantity": 25}]}}]' "https://api.withhako.com/v1/bundles"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+[
+  {
+    "id": 1,
+    "sku": "bundle-001",
+    "name": "Limited Time Gift Collection",
+    "item_skus": [
+      {
+        "sku": "item-sku-001",
+        "quantity": 25
+      }
+    ]
+  }
+]
+```
+
+Updates Bundle objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
+
+Returns an **array** of updated Bundle objects if successful.
+
+### HTTP Request
+
+`PATCH https://api.withhako.com/v1/bundles`
+
+### Query Parameters
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter | Type            | Required |
+| --------- | --------------- | -------- |
+| sku       | String          | true     |
+| updates   | JSON dictionary | true     |
+
+### Update Parameter Options
+| Parameter | Type   |
+| --------- | ------ |
+| sku       | String |
+| name      | String |
+| item_skus | Array  |
+| price     | Number |
+
+### Response Parameters
+_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
+
+| Parameter | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| sku       | String                  | The SKU of the updated Bundle            |
+| name      | String                  | The name of the updated Bundle           |
+| createdAt | Number (unix timestamp) | The creation date of the updated Bundle  |
+| updatedAt | Number (unix timestamp) | The most recent updated date of the updated Bundle |
+| item_skus | Array                   | The Items that comprise the updated Bundle |
+| price     | Number                  | The price of the updated Bundle          |
+
+##Delete Bundles
+```shell
+curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "bundle-001"}]' "https://api.withhako.com/v1/bundles"
+  -u "your_API_key:"
+```
+
+> Example Response:
+
+```json
+["bundle-001"]
+```
+
+Permanently deletes Bundle objects. This cannot be undone.
+
+Returns an **array** of deleted Bundle SKUs if successful.
+
+### HTTP Request
+
+`DELETE https://api.withhako.com/v1/bundles`
+
+### Query Parameters
+_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
+
+| Parameter | Type   | Required |
+| --------- | ------ | -------- |
+| sku       | String | true     |
+
+### Response Parameters
+_This endpoint returns an array of one or more strings upon success. The parameters for the returned strings are as follows:_
+
+| Parameter | Type   | Description                   |
+| --------- | ------ | ----------------------------- |
+| sku       | String | The SKU of the deleted Bundle |
+
 # Warehouses
 ## The Warehouse Object
 The **Warehouse** object represents locations where **Items** reside. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept.
@@ -322,7 +804,7 @@ The **Warehouse** object represents locations where **Items** reside. For exampl
 
 ##Create Warehouses
 ```shell
-curl -X POST -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "name": "San Francisco Warehouse"}]' "https://api.withhako.com/v0/warehouses"
+curl -X POST -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "name": "San Francisco Warehouse"}]' "https://api.withhako.com/v1/warehouses"
   -u "your_API_key:"
 ```
 
@@ -344,7 +826,7 @@ Returns an **array** of created Warehouse objects if successful.
 
 ### HTTP Request
 
-`POST https://api.withhako.com/v0/warehouses`
+`POST https://api.withhako.com/v1/warehouses`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -366,7 +848,7 @@ _This endpoint returns an **array** of one or more objects upon success. The par
 
 ##Retrieve Warehouses
 ```shell
-curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v0/warehouses"
+curl -X GET -H 'Content-Type: application/json' "https://api.withhako.com/v1/warehouses"
   -u "your_API_key:"
 ```
 
@@ -388,7 +870,7 @@ Returns an **array** of retrieved Warehouses objects if successful.
 
 ### HTTP Request
 
-`GET https://api.withhako.com/v0/warehouses`
+`GET https://api.withhako.com/v1/warehouses`
 
 ### Query Parameters
 _This endpoint requires a JSON object as input. The parameters for the object are as follows:_
@@ -436,7 +918,7 @@ _This endpoint returns an **array** of one or more objects upon success. The par
 
 ##Update Warehouses
 ```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "updates": {"name": "Bayview Warehouse"}}]' "https://api.withhako.com/v0/warehouses"
+curl -X PATCH -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010", "updates": {"name": "Bayview Warehouse"}}]' "https://api.withhako.com/v1/warehouses"
   -u "your_API_key:"
 ```
 
@@ -458,7 +940,7 @@ Returns an **array** of updated Warehouse objects if successful.
 
 ### HTTP Request
 
-`PUT https://api.withhako.com/v0/warehouses`
+`PATCH https://api.withhako.com/v1/warehouses`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -486,7 +968,7 @@ _This endpoint returns an **array** of one or more objects upon success. The par
 
 ##Delete Warehouses
 ```shell
-curl -X DELETE -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010"}]' "https://api.withhako.com/v0/warehouses"
+curl -X DELETE -H 'Content-Type: application/json' --data '[{"warehouseID": "warehouse-010"}]' "https://api.withhako.com/v1/warehouses"
   -u "your_API_key:"
 ```
 
@@ -502,7 +984,7 @@ Returns an **array** of deleted Warehouse warehouseIDs if successful.
 
 ### HTTP Request
 
-`DELETE https://api.withhako.com/v0/warehouses`
+`DELETE https://api.withhako.com/v1/warehouses`
 
 ### Query Parameters
 _This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
@@ -517,400 +999,4 @@ _This endpoint returns an array of one or more strings upon success. The paramet
 | Parameter   | Type   | Description                              |
 | ----------- | ------ | ---------------------------------------- |
 | warehouseID | String | The warehouseID of the deleted Warehouse |
-
-# Inventory
-## The Inventory Object
-The **Inventory** object represents the count of an **Item** that exists at a specific **Warehouse**. For example, a customer's ecommerce store may sell t-shirts and have two Warehouses where product is kept. One Warehouse has a quantity of 10 t-shirt Items and the other has 20 t-shirt Items.
-
-###Attributes
-| Attribute   | Type   | Description                              |
-| ----------- | ------ | ---------------------------------------- |
-| sku         | String | The SKU of the Item                      |
-| warehouseID | String | The warehouseID location of the Item     |
-| quantity    | Number | The quantity of Items at specified Warehouse |
-
-##Create Inventory
-```shell
-curl -X POST -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "quantity": 15}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 15
-  }
-]
-```
-
-Creates **Inventory** objects with the specified SKU, warehouseID, and quantity. If the specified SKU and warehouseID already has inventory saved in Hako, this endpoint will return an error and suggest you update the inventory count for the specified SKU and warehouseID instead.
-
-<aside class="notice">
-Both an Item with specified SKU and Warehouse with specified warehouseID must already exist before you can instantiate Inventory.
-</aside>
-
-Returns an **array** of created Inventory objects if successful.
-
-### HTTP Request
-
-`POST https://api.withhako.com/v0/inventory`
-
-### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter   | Type   | Required |
-| ----------- | ------ | -------- |
-| warehouseID | String | true     |
-| sku         | String | true     |
-| quantity    | Number | true     |
-
-### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type   | Description                              |
-| ----------- | ------ | ---------------------------------------- |
-| warehouseID | String | The warehouseID of the Warehouse that has Inventory |
-| sku         | String | The SKU of the Item that has Inventory   |
-| quantity    | Number | The quantity of Item in the Warehouse    |
-
-##Retrieve Inventory
-```shell
-curl -H 'Content-Type: application/json' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 15
-  }
-]
-```
-
-Retrieves the inventory count of the requested SKU and warehouseID. In the future, this endpoint will allow retrieval of inventory counts across all warehouses based on SKU or warehouseID.
-
-Returns an **array** of retrieved Inventory objects if successful.
-
-### HTTP Request
-
-`GET https://api.withhako.com/v0/inventory`
-
-### Query Parameters
-_This endpoint requires a JSON object as input. The parameters for the object are as follows:_
-
-| Parameter   | Type            | Required |
-| ----------- | --------------- | -------- |
-| warehouseID | String          | false    |
-| sku         | String          | false    |
-| quantity    | JSON dictionary | false    |
-| createdAt   | JSON dictionary | false    |
-| updatedAt   | JSON dictionary | false    |
-
-### Quantity Parameter Options
-
-_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
-
-| Parameter | Type                    | Description                              |
-| --------- | ----------------------- | ---------------------------------------- |
-| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
-| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
-| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
-| lt        | JSON dictionary         | Less than a unix timestamp               |
-
-### CreatedAt Parameter Options
-
-_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
-
-| Parameter | Type                    | Description                              |
-| --------- | ----------------------- | ---------------------------------------- |
-| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
-| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
-| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
-| lt        | JSON dictionary         | Less than a unix timestamp               |
-
-### UpdatedAt Parameter Options
-
-_This parameter takes a JSON dictionary as input, with one or two of the following. Note that gte cannot be combined with gt, nor lte with lt.:_
-
-| Parameter | Type                    | Description                              |
-| --------- | ----------------------- | ---------------------------------------- |
-| gte       | Number (unix timestamp) | Greater than or equal to a unix timestamp |
-| gt        | Number (unix timestamp) | Greater than a unix timestamp            |
-| lte       | JSON dictionary         | Less than or equal to a unix timestamp   |
-| lt        | JSON dictionary         | Less than a unix timestamp               |
-
-### Response Parameters
-
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type                    | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| warehouseID | String                  | The warehouseID of the retrieved Inventory object |
-| sku         | String                  | The SKU of the retrieved Inventory object |
-| quantity    | Number                  | The quantity of Items in the Warehouse   |
-| createdAt   | Number (unix timestamp) | The creation date of the retrieved Inventory object |
-| updatedAt   | Number (unix timestamp) | The most recent updated date of the retrieved Inventory object |
-
-##Update Inventory
-```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "updates": {"quantity": 14}}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 14
-  }
-]
-```
-
-Updates existing Inventory objects by setting the values of the parameters passed. Any parameters not provided will be left unchanged. 
-
-This endpoint will **override** any existing data for the given parameters, such as manually setting the inventory quantity to 0 (e.g., resolving a inventory discrepancy). This endpoint should not be used for regular inventory quantity updating. For regular quantity updating, see Incrementing Inventory or Decrementing Inventory.
-
-Returns an **array** of updated Inventory objects if successful.
-
-### HTTP Request
-
-`PUT https://api.withhako.com/v0/inventory`
-
-### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter   | Type            | Required |
-| ----------- | --------------- | -------- |
-| sku         | String          | true     |
-| warehouseID | String          | true     |
-| updates     | JSON dictionary | true     |
-
-### Update Parameter Options
-| Parameter   | Type   |
-| ----------- | ------ |
-| warehouseID | String |
-| sku         | String |
-| quantity    | Number |
-
-### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type                    | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| warehouseID | String                  | The warehouseID of the updated Inventory Object |
-| sku         | String                  | The SKU of the updated Inventory object  |
-| quantity    | Number                  | The quantity of Items in Warehouse       |
-| createdAt   | Number (unix timestamp) | The creation date of the updated Warehouse |
-| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Warehouse |
-
-##Incrementing Inventory
-```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "incrementBy": 2}]' "https://api.withhako.com/v0/inventory/increment"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 16
-  }
-]
-```
-
-Updates existing Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after receiving more stock of an item from a vendor.
-
-Returns an **array** of updated Inventory objects if successful.
-
-### HTTP Request
-
-`PUT https://api.withhako.com/v0/inventory/increment`
-
-### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter   | Type   | Required |
-| ----------- | ------ | -------- |
-| sku         | String | true     |
-| warehouseID | String | true     |
-| incrementBy | Number | true     |
-
-### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type                    | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| warehouseID | String                  | The warehouseID of the updated Inventory Object |
-| sku         | String                  | The SKU of the updated Inventory object  |
-| quantity    | Number                  | The quantity of Items in Warehouse       |
-| createdAt   | Number (unix timestamp) | The creation date of the updated Inventory Object |
-| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Inventory Object |
-
-##Decrementing Inventory
-```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010", "decrementBy": 2}]' "https://api.withhako.com/v0/inventory/decrement"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 12
-  }
-]
-```
-
-Updates existing Inventory objects' quantities. **This endpoint should be used in most cases when updating inventory numbers**, such as after selling an item to a customer.
-
-Returns an **array** of updated Inventory objects if successful.
-
-### HTTP Request
-
-`PUT https://api.withhako.com/v0/inventory/decrement`
-
-### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter   | Type   | Required |
-| ----------- | ------ | -------- |
-| sku         | String | true     |
-| warehouseID | String | true     |
-| decrementBy | Number | true     |
-
-### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type                    | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| warehouseID | String                  | The warehouseID of the updated Inventory Object |
-| sku         | String                  | The SKU of the updated Inventory object  |
-| quantity    | Number                  | The quantity of Items in Warehouse       |
-| createdAt   | Number (unix timestamp) | The creation date of the updated Warehouse |
-| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Warehouse |
-
-## Transferring Inventory
-
-```shell
-curl -X PUT -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "sourceWarehouseID": "warehouse-010", "destinationWarehouseID": "warehouse-011", "quantity": 25}]' "https://api.withhako.com/v0/inventory/transfer"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "id": 1,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010",
-    "quantity": 12
-  },
-  {
-    "id": 2,
-    "sku": "hk-001",
-    "warehouseID": "warehouse-011",
-    "quantity": 37
-  }
-]
-```
-
-Transfers existing Inventory from one warehouse (**sourceWarehouseID**) to another (**destinationWarehouseID**). One use case of transferring inventory is from the main warehouse to a storefront.
-
-<aside class="notice">
-There must be at least the quantity specified in the warehouse with sourceWarehouseID in order to successfully call this endpoint. Additionally, SKU, sourceWarehouseID, and destinationWarehouseID must already exist as Items and Warehouses.
-</aside>
-
-Returns an **array** of updated Inventory objects if successful.
-
-### HTTP Request
-
-`PUT https://api.withhako.com/v0/inventory/transfer`
-
-### Query Parameters
-
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter              | Type   | Required |
-| ---------------------- | ------ | -------- |
-| sku                    | String | true     |
-| sourceWarehouseID      | String | true     |
-| destinationWarehouseID | String | true     |
-| quantity               | Number | true     |
-
-### Response Parameters
-
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type                    | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| warehouseID | String                  | The warehouseID of the updated Inventory Object |
-| sku         | String                  | The SKU of the updated Inventory object  |
-| quantity    | Number                  | The quantity of Items in Warehouse       |
-| createdAt   | Number (unix timestamp) | The creation date of the updated Warehouse |
-| updatedAt   | Number (unix timestamp) | The most recent updated date of the updated Warehouse |
-
-##Delete Inventory
-
-```shell
-curl -X DELETE -H 'Content-Type: application/json' --data '[{"sku": "hk-001", "warehouseID": "warehouse-010"}]' "https://api.withhako.com/v0/inventory"
-  -u "your_API_key:"
-```
-
-> Example Response:
-
-```json
-[
-  {
-    "sku": "hk-001",
-    "warehouseID": "warehouse-010"
-  }
-]
-```
-
-Permanently deletes Inventory objects. This is the same as assigning a quantity of **0** Items to a Warehouse. This cannot be undone.
-
-Returns an **array** of deleted Inventory dictionaries containing SKUs and warehouseIDs if successful.
-
-### HTTP Request
-
-`DELETE https://api.withhako.com/v0/warehouses`
-
-### Query Parameters
-_This endpoint requires an **array** of one or more objects as input. The parameters for the objects are as follows:_
-
-| Parameter   | Type   | Required |
-| ----------- | ------ | -------- |
-| sku         | String | true     |
-| warehouseID | String | true     |
-
-### Response Parameters
-_This endpoint returns an **array** of one or more objects upon success. The parameters for the returned objects are as follows:_
-
-| Parameter   | Type   | Description                              |
-| ----------- | ------ | ---------------------------------------- |
-| sku         | String | The SKU of the deleted Inventory object  |
-| warehouseID | String | The warehouseID of the deleted Inventory object |
 
